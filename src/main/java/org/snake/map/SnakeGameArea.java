@@ -1,5 +1,6 @@
 package org.snake.map;
 
+import static java.lang.Math.abs;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,41 +9,46 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Random;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.snake.game.objects.Food;
 import org.snake.game.objects.Snake;
 
 public class SnakeGameArea extends JPanel implements ActionListener {
+    private static final Logger LOGGER = LogManager.getLogger(SnakeGameArea.class);
 
-    public static final int SEGMENT_SIZE = 25;
-    private final int WIDTH;
-    private final int HEIGHT;
-    private final int DELAY = 150;
+    public static final int SEGMENT_SIZE = 50;
+    private final int AREA_WIDTH;
+    private final int AREA_HEIGHT;
+    private final int DELAY = 200;
     private final ImageIcon bgImage;
 
     //OBJECTS
     private Snake snake;
-    private ArrayList<Food> foodList = new ArrayList<>();
+    private final ArrayList<Food> foodList = new ArrayList<>();
 
     //GAME VARIABLES
     private int score;
     private boolean running = false;
-    private Random random;
+    private final Random random;
     private KeyEvent moveEvent;
     private Timer timer;
 
     public SnakeGameArea(int width, int height) {
-        WIDTH = width;
-        HEIGHT = height;
+        AREA_WIDTH = width;
+        AREA_HEIGHT = height;
         this.bgImage = new ImageIcon("src/main/resources/grass.jpeg");
         random = new Random();
         setOpaque(true);
-        setPreferredSize(new Dimension(WIDTH * SEGMENT_SIZE, HEIGHT * SEGMENT_SIZE));
+        setPreferredSize(new Dimension(AREA_WIDTH * SEGMENT_SIZE, AREA_HEIGHT * SEGMENT_SIZE));
         setFocusable(true);
         addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                handleKeyInput(e);
+            public void keyPressed(KeyEvent event) {
+                if (moveEvent == null || event.getKeyChar() != moveEvent.getKeyChar()) { // CONDITION TO PREVENT KEY SPAMMING (SNAKE SPEEDBOOST)
+                    handleKeyInput(event);
+                }
             }
         });
         gameStart();
@@ -51,8 +57,7 @@ public class SnakeGameArea extends JPanel implements ActionListener {
     @Override
     protected void paintComponent(Graphics graphicsManager) {
         super.paintComponent(graphicsManager);
-        graphicsManager.drawImage(bgImage.getImage(), 0, 0, WIDTH, HEIGHT, this);
-
+        graphicsManager.drawImage(bgImage.getImage(), 0, 0, AREA_WIDTH, AREA_HEIGHT, this);
         if (running) {
             for (int i = snake.getSnakeLength() -1 ; i >= 0; i--) {
                 if (i == 0) {
@@ -69,16 +74,21 @@ public class SnakeGameArea extends JPanel implements ActionListener {
                 graphicsManager.fillRect(food.getFoodX(), food.getFoodY(), SEGMENT_SIZE, SEGMENT_SIZE);
             }
         } else {
-            showGameOver(graphicsManager);
+            if (snake.getSnakeLength() == (AREA_HEIGHT / SEGMENT_SIZE) * (AREA_WIDTH / SEGMENT_SIZE)) {
+                showWinGame(graphicsManager);
+            } else {
+                showGameOver(graphicsManager);
+            }
         }
-
+        printScore(graphicsManager);
         Toolkit.getDefaultToolkit().sync();
     }
 
     //GAME LOGIC
     private void gameStart() {
-        this.snake = new Snake(3, WIDTH , HEIGHT);
-        foodList.add(addFood());
+        this.snake = new Snake(3, AREA_WIDTH, AREA_HEIGHT);
+        score = 0;
+        foodList.add(createFood());
         timer = new Timer(DELAY, this);
         timer.start();
         running = true;
@@ -102,53 +112,89 @@ public class SnakeGameArea extends JPanel implements ActionListener {
                     break;
             }
             handleSnakeActions(snake);
+            handleFoodList();
         }
     }
 
-    private Food addFood() {
-        int randomX = random.nextInt(24);
-        int randomY = random.nextInt(24);
-        return new Food(randomX * SEGMENT_SIZE, randomY * SEGMENT_SIZE);
+    private Food createFood() {
+        int randomX = random.nextInt(AREA_WIDTH / SEGMENT_SIZE );
+        int randomY = random.nextInt(AREA_HEIGHT / SEGMENT_SIZE );
+        return new Food(abs(randomX * SEGMENT_SIZE - SEGMENT_SIZE), abs(randomY * SEGMENT_SIZE - SEGMENT_SIZE));
     }
 
     private void handleSnakeActions(Snake snake) {
+        LOGGER.info("SNAKE POSITION: X - {} Y - {}", snake.getX()[0], snake.getY()[0]);
         for (Food food : foodList) {
-            if (snake.checkIfSnakeEatFood(food)) handleKeyInput(moveEvent);
+            if (snake.checkIfSnakeEatFood(food)) {
+                if (food.getColor().equals(Color.ORANGE)) {
+                    score += 500;
+                } else {
+                    score += 100;
+                }
+                snake.setCollectedFood(snake.getCollectedFood() + 1);                              //HANDLE SCORE
+                snake.getX()[snake.getSnakeLength()] = snake.getX()[snake.getSnakeLength() - 1];
+                snake.getY()[snake.getSnakeLength()] = snake.getY()[snake.getSnakeLength() - 1];
+                snake.setSnakeLength(snake.getSnakeLength() + 1);                                 //HANDLE SNAKE BODY SEGMENT ADD
+            }
         }
-        score += snake.getCollectedFood() * 100;
         if (snake.checkIfSnakeNotHitHimself() || checkIfSnakeHitWall(snake)) {
-            timer.stop();
+            timer.stop();                                                                        //HANDLE GAME END
             running = false;
         }
     }
 
     private boolean checkIfSnakeHitWall (Snake snake) {
-        return snake.getX()[0] == HEIGHT || snake.getX()[0] == 0 || snake.getY()[0] == WIDTH || snake.getY()[0] == 0;
+         if (snake.getX()[0] == AREA_HEIGHT || snake.getX()[0] < 0 || snake.getY()[0] == AREA_WIDTH || snake.getY()[0] < 0 ){
+            LOGGER.info("SNAKE HIT THE WALL AT:  X - {} Y - {} ", snake.getX()[0], snake.getY()[0]);
+            return true;
+         }
+         return false;
     }
 
     private void handleFoodList() {
         foodList.removeIf(Food::isEaten);
-        int bet = random.nextInt( 10);
-        if (bet % 10 == 0) {
-            foodList.add(addFood());
+        if (foodList.isEmpty()) {
+            LOGGER.info("ALL FOODS HAVE BEEN EATEN!");
+            Food newFood = createFood();
+            foodList.add(newFood);
+            LOGGER.info("CREATE A NEW ONE AT:  X - {} Y - {} ", newFood.getFoodX(), newFood.getFoodY());
         }
     }
 
     private void showGameOver(Graphics g) {
-        String message = "Game Over";
-        Font font = new Font("Helvetica", Font.BOLD, 40);
+        String message = "Game Over!";
+        String scoreMessage = "Score: " + score + " Collected food: " + snake.getCollectedFood();
+        Font font = new Font("Helvetica", Font.BOLD, 35);
         FontMetrics metrics = getFontMetrics(font);
-
         g.setColor(Color.RED);
         g.setFont(font);
-        g.drawString(message, (WIDTH - metrics.stringWidth(message)) / 2, HEIGHT / 2);
+        g.drawString(message, (AREA_WIDTH - metrics.stringWidth(message)) / 2, AREA_HEIGHT / 2);
+        g.drawString(scoreMessage, (AREA_WIDTH - metrics.stringWidth(scoreMessage)) / 2, AREA_HEIGHT / 2 + SEGMENT_SIZE);
+    }
+
+    private void showWinGame(Graphics g) {
+        String message = "Winner!";
+        String scoreMessage = "Score: " + score + " Collected food: " + snake.getCollectedFood();
+        Font font = new Font("Helvetica", Font.BOLD, 35);
+        FontMetrics metrics = getFontMetrics(font);
+        g.setColor(Color.RED);
+        g.setFont(font);
+        g.drawString(message, (AREA_WIDTH - metrics.stringWidth(message)) / 2, AREA_HEIGHT / 2);
+        g.drawString(scoreMessage, (AREA_WIDTH - metrics.stringWidth(scoreMessage)) / 2, AREA_HEIGHT / 2 + SEGMENT_SIZE);
+    }
+
+    private void printScore(Graphics g) {
+        String scoreMessage = "Score: " + score + " Collected food: " + snake.getCollectedFood();
+        Font font = new Font("Helvetica", Font.BOLD, 20);
+        FontMetrics metrics = getFontMetrics(font);
+        g.setColor(Color.RED);
+        g.setFont(font);
+        g.drawString(scoreMessage, (AREA_WIDTH - metrics.stringWidth(scoreMessage)) / 2, SEGMENT_SIZE / 2);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (running) {
-            handleFoodList();
-            handleSnakeActions(snake);
             handleKeyInput(moveEvent);
         }
         repaint();

@@ -4,15 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2bd5c712-66b2-4b40-a0fc-15ddbeb96d24" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/snake/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/grass.png" afterDir="false" />
+    <list default="true" id="2bd5c712-66b2-4b40-a0fc-15ddbeb96d24" name="Changes" comment="First version on Snake Game">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/snake/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/snake/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/snake/game/SnakeGameWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/snake/game/SnakeGameWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/snake/game/objects/Food.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/snake/game/objects/Food.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/snake/game/objects/Snake.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/snake/game/objects/Snake.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/snake/map/SnakeGameArea.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/snake/map/SnakeGameArea.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,9 +31,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2nZUZ5sHfO4GwO17M9TUHmZRPdl" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -39,7 +41,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.SnakeGame.executor": "Run",
+    "Application.SnakeGame.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Project/SnakeJavaGame",
@@ -68,15 +70,8 @@
     </task>
     <servers />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/snake/map/SnakeGameArea.java</url>
-          <line>119</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="First version on Snake Game" />
+    <option name="LAST_COMMIT_MESSAGE" value="First version on Snake Game" />
   </component>
 </project>

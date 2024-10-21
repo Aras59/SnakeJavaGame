@@ -1,12 +1,16 @@
-package org.snake.classes;
+package org.snake;
 
 
-import org.snake.classes.map.GameArea;
+import javax.swing.*;
+import java.awt.*;
+
+import org.snake.game.SnakeGameWindow;
 
 public class Main {
     public static void main(String[] args) {
-        GameArea area = new GameArea();
-
-        area.
+        EventQueue.invokeLater(() -> {
+            JFrame frame = new SnakeGameWindow();
+            frame.setVisible(true);
+        });
     }
 }

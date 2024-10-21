@@ -1,6 +1,5 @@
 package org.snake.game.objects;
 
-import static java.lang.Math.abs;
 import java.awt.*;
 
 public class Food {
@@ -11,7 +10,11 @@ public class Food {
     public Food(int foodX, int foodY) {
         this.foodX = foodX;
         this.foodY = foodY;
-        color = Color.getHSBColor(foodX, foodY, abs(foodX - foodY));
+        if (foodX % 3 == 0 && foodY % 3 == 0) {
+            color = Color.ORANGE;
+        } else {
+            color = Color.RED;
+        }
         this.isEaten = false;
     }
 

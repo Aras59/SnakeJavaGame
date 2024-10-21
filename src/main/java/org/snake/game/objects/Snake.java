@@ -46,8 +46,6 @@ public class Snake {
         if (food != null) {
             if (food.getFoodX() == x[0] && food.getFoodY() == y[0]) {
                 food.setEaten(true);
-                collectedFood += 1;
-                snakeLength += 1;
                 return true;
             }
         }
